@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.bmsview
  * Created by anweshmishra on 19/07/18.
  */
 
+import android.app.Activity
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.view.View
@@ -202,5 +203,13 @@ class BMSView(ctx : Context) : View(ctx) {
             }
         }
 
+    }
+
+    companion object {
+        fun create(activity : Activity) : BMSView {
+            val view : BMSView = BMSView(activity)
+            activity.setContentView(view)
+            return view 
+        }
     }
 }
