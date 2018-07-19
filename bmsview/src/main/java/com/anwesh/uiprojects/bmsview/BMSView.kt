@@ -40,7 +40,7 @@ fun Canvas.drawBSMNode(i : Int, j : Int, scale : Float, paint : Paint) {
     val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
     drawStep(gap, sc1, paint)
     if (i == j) {
-        drawBall(gap, -gap * sc2, gap/10, sc2, paint)
+        drawBall(gap, -gap * sc1, gap/10, sc2, paint)
     }
     restore()
 }
@@ -105,8 +105,52 @@ class BMSView(ctx : Context) : View(ctx) {
 
         fun stop() {
             if (animated) {
-                animated = false 
+                animated = false
             }
+        }
+    }
+
+    data class BMSNode(var i : Int, val state : BMSState = BMSState()) {
+
+        private var next : BMSNode? = null
+
+        private var prev : BMSNode? = null
+
+        fun update(stopcb : (Int, Float) -> Unit) {
+            state.update {
+                stopcb(i, it)
+            }
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun draw(j : Int, canvas : Canvas, paint : Paint) {
+            canvas.drawBSMNode(i, j, state.scale, paint)
+        }
+
+        fun addNeighbor() {
+            if (i < BMS_NODES - 1) {
+                next = BMSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        init {
+            addNeighbor()
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : BMSNode {
+            var curr : BMSNode? = this.prev
+            if (dir == 1) {
+                curr = this.next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
         }
     }
 }
