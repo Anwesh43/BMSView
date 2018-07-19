@@ -177,4 +177,28 @@ class BMSView(ctx : Context) : View(ctx) {
             curr.startUpdating(startcb)
         }
     }
+
+    data class Renderer(var view : BMSView) {
+
+        private val animator : BMSAnimator = BMSAnimator(view)
+
+        private val lbms : LinkedBMS = LinkedBMS(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            lbms.draw(canvas, paint)
+            animator.animate {
+                lbms.update {j, scale ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            lbms.startUpdating {
+                animator.start()
+            }
+        }
+
+    }
 }
