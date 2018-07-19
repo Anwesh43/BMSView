@@ -14,18 +14,20 @@ import android.graphics.Color
 
 val BMS_NODES : Int = 5
 
-fun Canvas.drawBall(gap : Float, y : Float, r : Float, scale : Float,  paint : Paint) {
+fun Canvas.drawBall(gap : Float, y : Float, deg : Float, r : Float, scale : Float,  paint : Paint) {
     paint.style = Paint.Style.STROKE
+    paint.strokeWidth = r / 5
+    val degGap : Float = 360f / BMS_NODES
     save()
     translate(gap * scale, y - r)
-    rotate(360f * scale)
+    rotate(deg + degGap * scale)
     drawCircle(0f, 0f, r, paint)
     drawLine(0f, 0f, 0f, -r * 0.6f, paint)
     restore()
 }
 
 fun Canvas.drawStep(gap : Float, scale : Float, paint : Paint) {
-    drawLine(0f, 0f, gap, -gap * scale, paint)
+    drawLine(0f, -gap * scale, gap, -gap * scale, paint)
 }
 
 fun Canvas.drawBSMNode(i : Int, j : Int, scale : Float, paint : Paint) {
@@ -39,9 +41,10 @@ fun Canvas.drawBSMNode(i : Int, j : Int, scale : Float, paint : Paint) {
     translate(0.05f * w + i * gap, 0.95f * h - i * gap)
     val sc1 : Float = Math.min(0.5f, scale) * 2
     val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
+    val deg : Float = 360f/ BMS_NODES
     drawStep(gap, sc1, paint)
     if (i == j) {
-        drawBall(gap, -gap * sc1, gap/10, sc2, paint)
+        drawBall(gap, -gap * sc1, i * deg, gap/5, sc2, paint)
     }
     restore()
 }
@@ -131,6 +134,7 @@ class BMSView(ctx : Context) : View(ctx) {
 
         fun draw(j : Int, canvas : Canvas, paint : Paint) {
             canvas.drawBSMNode(i, j, state.scale, paint)
+            next?.draw(j, canvas, paint)
         }
 
         fun addNeighbor() {
@@ -159,12 +163,14 @@ class BMSView(ctx : Context) : View(ctx) {
 
     data class LinkedBMS(var i : Int) {
 
-        private var curr : BMSNode = BMSNode(i + 1)
+        private var root :BMSNode = BMSNode(0)
+
+        private var curr : BMSNode = root
 
         private var dir : Int = 1
 
         fun draw(canvas : Canvas, paint : Paint) {
-            curr.draw( curr.i, canvas, paint)
+            root.draw( curr.i, canvas, paint)
         }
 
         fun update(stopcb : (Int, Float) -> Unit) {
@@ -209,7 +215,7 @@ class BMSView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : BMSView {
             val view : BMSView = BMSView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
