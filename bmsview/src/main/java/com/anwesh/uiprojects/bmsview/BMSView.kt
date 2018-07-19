@@ -17,7 +17,7 @@ val BMS_NODES : Int = 5
 fun Canvas.drawBall(gap : Float, y : Float, deg : Float, r : Float, scale : Float,  paint : Paint) {
     paint.style = Paint.Style.STROKE
     paint.strokeWidth = r / 5
-    val degGap : Float = 360f / BMS_NODES
+    val degGap : Float = (360f * 3) / BMS_NODES
     save()
     translate(gap * scale, y - r)
     rotate(deg + degGap * scale)
@@ -41,7 +41,7 @@ fun Canvas.drawBSMNode(i : Int, j : Int, scale : Float, paint : Paint) {
     translate(0.05f * w + i * gap, 0.95f * h - i * gap)
     val sc1 : Float = Math.min(0.5f, scale) * 2
     val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
-    val deg : Float = 360f/ BMS_NODES
+    val deg : Float = (360f  * 3)/ BMS_NODES
     drawStep(gap, sc1, paint)
     if (i == j) {
         drawBall(gap, -gap * sc1, i * deg, gap/5, sc2, paint)
