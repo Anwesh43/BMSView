@@ -153,4 +153,28 @@ class BMSView(ctx : Context) : View(ctx) {
             return this
         }
     }
+
+    data class LinkedBMS(var i : Int) {
+
+        private var curr : BMSNode = BMSNode(i + 1)
+
+        private var dir : Int = 1
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            curr.draw( curr.i, canvas, paint)
+        }
+
+        fun update(stopcb : (Int, Float) -> Unit) {
+            curr.update {i, scale ->
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                stopcb(i, scale)
+            }
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            curr.startUpdating(startcb)
+        }
+    }
 }
